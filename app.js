@@ -50,21 +50,21 @@ const provider = new GoogleAuthProvider();
 // ══════════════════════════════════════
 //  STATE
 // ══════════════════════════════════════
-let currentUser   = null;
-let activeTab     = "feed";
-let selectedTag   = "general";
-let currentPostId = null;   // for comment modal
-let feedUnsub     = null;   // unsubscribe real-time listener
-let exploreUnsub  = null;
+let currentUser    = null;
+let activeTab      = "feed";
+let selectedTag    = "general";
+let currentPostId  = null;   // for comment modal
+let feedUnsub      = null;   // unsubscribe real-time listener
+let exploreUnsub   = null;
 let userPostsUnsub = null;
-let activityLog   = [];
+let activityLog    = [];
 
 // ══════════════════════════════════════
 //  DOM HELPERS
 // ══════════════════════════════════════
 const $ = id => document.getElementById(id);
-const loginScreen   = $("login-screen");
-const appScreen     = $("app-screen");
+const loginScreen = $("login-screen");
+const appScreen   = $("app-screen");
 
 function showToast(msg, type = "info") {
   const t = $("toast");
@@ -76,10 +76,10 @@ function showToast(msg, type = "info") {
 function timeAgo(ts) {
   if (!ts) return "just now";
   const sec = Math.floor((Date.now() - ts.toMillis()) / 1000);
-  if (sec < 60)   return `${sec}s ago`;
-  if (sec < 3600) return `${Math.floor(sec/60)}m ago`;
-  if (sec < 86400)return `${Math.floor(sec/3600)}h ago`;
-  return `${Math.floor(sec/86400)}d ago`;
+  if (sec < 60)    return `${sec}s ago`;
+  if (sec < 3600)  return `${Math.floor(sec / 60)}m ago`;
+  if (sec < 86400) return `${Math.floor(sec / 3600)}h ago`;
+  return `${Math.floor(sec / 86400)}d ago`;
 }
 
 function avatarFallback(name) {
@@ -117,11 +117,11 @@ function avatarFallback(name) {
   class Particle {
     constructor() { this.reset(); }
     reset() {
-      this.x = Math.random() * W;
-      this.y = Math.random() * H;
-      this.r = Math.random() * 1.5 + 0.3;
-      this.vx = (Math.random() - 0.5) * 0.25;
-      this.vy = (Math.random() - 0.5) * 0.25;
+      this.x     = Math.random() * W;
+      this.y     = Math.random() * H;
+      this.r     = Math.random() * 1.5 + 0.3;
+      this.vx    = (Math.random() - 0.5) * 0.25;
+      this.vy    = (Math.random() - 0.5) * 0.25;
       this.alpha = Math.random() * 0.6 + 0.1;
       this.color = Math.random() > 0.5 ? "#00d4ff" : "#7b2fff";
     }
@@ -147,14 +147,14 @@ function avatarFallback(name) {
     // draw connecting lines
     for (let i = 0; i < particles.length; i++) {
       for (let j = i + 1; j < particles.length; j++) {
-        const dx = particles[i].x - particles[j].x;
-        const dy = particles[i].y - particles[j].y;
-        const dist = Math.sqrt(dx*dx + dy*dy);
+        const dx   = particles[i].x - particles[j].x;
+        const dy   = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
         if (dist < 80) {
           ctx.beginPath();
           ctx.moveTo(particles[i].x, particles[i].y);
           ctx.lineTo(particles[j].x, particles[j].y);
-          ctx.strokeStyle = `rgba(0,212,255,${0.12 * (1 - dist/80)})`;
+          ctx.strokeStyle = `rgba(0,212,255,${0.12 * (1 - dist / 80)})`;
           ctx.lineWidth = 0.4;
           ctx.stroke();
         }
@@ -176,10 +176,10 @@ function initRadar() {
   let angle = 0;
 
   const data = [
-    { label: "Launches",  val: 0.42, color: "#00d4ff"  },
-    { label: "Missions",  val: 0.28, color: "#00ff88"  },
-    { label: "Research",  val: 0.80, color: "#7b2fff"  },
-    { label: "General",   val: 1.00, color: "#ffd700"  },
+    { label: "Launches", val: 0.42, color: "#00d4ff" },
+    { label: "Missions", val: 0.28, color: "#00ff88" },
+    { label: "Research", val: 0.80, color: "#7b2fff" },
+    { label: "General",  val: 1.00, color: "#ffd700" },
   ];
 
   function drawRadar() {
@@ -189,7 +189,7 @@ function initRadar() {
     for (let i = 1; i <= 4; i++) {
       ctx.beginPath();
       ctx.arc(cx, cy, (R / 4) * i, 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(0,212,255,${0.08 + i*0.03})`;
+      ctx.strokeStyle = `rgba(0,212,255,${0.08 + i * 0.03})`;
       ctx.lineWidth = 1;
       ctx.stroke();
     }
@@ -240,8 +240,8 @@ function initRadar() {
 
     // Sweep line
     angle += 0.015;
-    const sx = cx + R * Math.cos(angle);
-    const sy = cy + R * Math.sin(angle);
+    const sx   = cx + R * Math.cos(angle);
+    const sy   = cy + R * Math.sin(angle);
     const grad = ctx.createLinearGradient(cx, cy, sx, sy);
     grad.addColorStop(0, "rgba(0,212,255,0)");
     grad.addColorStop(1, "rgba(0,212,255,0.6)");
@@ -286,8 +286,8 @@ $("google-signin-btn").addEventListener("click", async () => {
 });
 
 $("signout-btn").addEventListener("click", async () => {
-  if (feedUnsub) feedUnsub();
-  if (exploreUnsub) exploreUnsub();
+  if (feedUnsub)      feedUnsub();
+  if (exploreUnsub)   exploreUnsub();
   if (userPostsUnsub) userPostsUnsub();
   await signOut(auth);
 });
@@ -303,23 +303,22 @@ onAuthStateChanged(auth, async user => {
     currentUser = null;
     appScreen.classList.remove("active");
     loginScreen.classList.add("active");
-    // reset UI
     $("posts-container").innerHTML = `<div class="loading-posts"><div class="orbit-loader"></div><span>Syncing orbital data...</span></div>`;
   }
 });
 
 async function ensureUserProfile(user) {
-  const ref = doc(db, "users", user.uid);
+  const ref  = doc(db, "users", user.uid);
   const snap = await getDoc(ref);
   if (!snap.exists()) {
     await setDoc(ref, {
-      uid: user.uid,
+      uid:         user.uid,
       displayName: user.displayName,
-      email: user.email,
-      photoURL: user.photoURL || avatarFallback(user.displayName),
-      postCount: 0,
-      likeCount: 0,
-      joinedAt: serverTimestamp()
+      email:       user.email,
+      photoURL:    user.photoURL || avatarFallback(user.displayName),
+      postCount:   0,
+      likeCount:   0,
+      joinedAt:    serverTimestamp()
     });
   }
 }
@@ -328,15 +327,13 @@ async function ensureUserProfile(user) {
 //  APP INIT
 // ══════════════════════════════════════
 function initApp() {
-  // Nav info
-  $("nav-avatar").src = currentUser.photoURL || avatarFallback(currentUser.displayName);
-  $("nav-name").textContent = currentUser.displayName?.split(" ")[0] || "Pilot";
-  $("post-author-avatar").src = currentUser.photoURL || avatarFallback(currentUser.displayName);
-  $("comment-author-avatar").src = currentUser.photoURL || avatarFallback(currentUser.displayName);
+  $("nav-avatar").src           = currentUser.photoURL || avatarFallback(currentUser.displayName);
+  $("nav-name").textContent     = currentUser.displayName?.split(" ")[0] || "Pilot";
+  $("post-author-avatar").src   = currentUser.photoURL || avatarFallback(currentUser.displayName);
+  $("comment-author-avatar").src= currentUser.photoURL || avatarFallback(currentUser.displayName);
 
-  // Profile
-  $("profile-avatar").src = currentUser.photoURL || avatarFallback(currentUser.displayName);
-  $("profile-name").textContent = currentUser.displayName || "Unknown Pilot";
+  $("profile-avatar").src       = currentUser.photoURL || avatarFallback(currentUser.displayName);
+  $("profile-name").textContent  = currentUser.displayName || "Unknown Pilot";
   $("profile-email").textContent = currentUser.email || "";
 
   startClock();
@@ -367,8 +364,8 @@ function switchTab(tab) {
   document.querySelectorAll(".mobile-nav-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
   document.querySelectorAll(".tab-section").forEach(s => s.classList.toggle("active", s.id === `tab-${tab}`));
 
-  if (tab === "explore") loadExplore();
-  if (tab === "profile") loadUserPosts();
+  if (tab === "explore")   loadExplore();
+  if (tab === "profile")   loadUserPosts();
   if (tab === "dashboard") loadStats();
 }
 
@@ -389,7 +386,7 @@ function setupTagButtons() {
 //  CREATE POST
 // ══════════════════════════════════════
 function setupPostSubmit() {
-  const btn = $("submit-post-btn");
+  const btn      = $("submit-post-btn");
   const textarea = $("post-content");
 
   // Auto-expand textarea
@@ -410,31 +407,28 @@ async function submitPost() {
   if (content.length > 1000) { showToast("Post too long (max 1000 chars)", "error"); return; }
 
   const btn = $("submit-post-btn");
-  btn.disabled = true;
+  btn.disabled    = true;
   btn.textContent = "Transmitting...";
 
   try {
     await addDoc(collection(db, "posts"), {
       content,
-      tag: selectedTag,
-      authorId: currentUser.uid,
-      authorName: currentUser.displayName || "Pilot",
+      tag:         selectedTag,
+      authorId:    currentUser.uid,
+      authorName:  currentUser.displayName || "Pilot",
       authorPhoto: currentUser.photoURL || avatarFallback(currentUser.displayName),
-      likes: [],
+      likes:        [],
       commentCount: 0,
-      createdAt: serverTimestamp()
+      createdAt:    serverTimestamp()
     });
 
-    // Update user post count
     const uRef = doc(db, "users", currentUser.uid);
     await updateDoc(uRef, { postCount: increment(1) });
 
-    $("post-content").value = "";
+    $("post-content").value       = "";
     $("post-content").style.height = "auto";
     showToast("✅ Transmission sent!");
     addActivity(`You posted in #${selectedTag}`);
-
-    // Update profile stats
     loadProfileStats();
   } catch (err) {
     showToast("Transmission failed: " + err.message, "error");
@@ -494,14 +488,18 @@ function setupExploreSearch() {
   input.addEventListener("input", debounce(async () => {
     const term = input.value.trim().toLowerCase();
     if (!term) { loadExplore(); return; }
-    const q = query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(100));
+    const q    = query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(100));
     const snap = await getDocs(q);
     const container = $("explore-posts");
     container.innerHTML = "";
     let found = 0;
     snap.forEach(d => {
       const data = d.data();
-      if (data.content.toLowerCase().includes(term) || data.authorName.toLowerCase().includes(term) || (data.tag || "").toLowerCase().includes(term)) {
+      if (
+        data.content.toLowerCase().includes(term) ||
+        data.authorName.toLowerCase().includes(term) ||
+        (data.tag || "").toLowerCase().includes(term)
+      ) {
         container.appendChild(buildPostCard(d.id, data));
         found++;
       }
@@ -519,7 +517,8 @@ function setupExploreSearch() {
 }
 
 function debounce(fn, ms) {
-  let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+  let t;
+  return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
 }
 
 // ══════════════════════════════════════
@@ -543,10 +542,7 @@ function loadUserPosts() {
       return;
     }
     container.innerHTML = "";
-    snap.forEach(d => {
-      const card = buildPostCard(d.id, d.data(), true);
-      container.appendChild(card);
-    });
+    snap.forEach(d => container.appendChild(buildPostCard(d.id, d.data(), true)));
   });
 }
 
@@ -565,13 +561,13 @@ async function loadProfileStats() {
 // ══════════════════════════════════════
 function buildPostCard(postId, data, showDelete = false) {
   const card = document.createElement("div");
-  card.className = "post-card glass card-glow";
+  card.className    = "post-card glass card-glow";
   card.dataset.postId = postId;
 
-  const liked = data.likes?.includes(currentUser?.uid);
+  const liked     = data.likes?.includes(currentUser?.uid);
   const likeCount = data.likes?.length || 0;
-  const tagClass = `tag-${data.tag || "general"}`;
-  const isOwn = data.authorId === currentUser?.uid;
+  const tagClass  = `tag-${data.tag || "general"}`;
+  const isOwn     = data.authorId === currentUser?.uid;
 
   card.innerHTML = `
     <div class="post-header">
@@ -612,11 +608,8 @@ function buildPostCard(postId, data, showDelete = false) {
     </div>
   `;
 
-  // Like
   card.querySelector(".like-btn").addEventListener("click", () => toggleLike(postId, data.likes || []));
-  // Comment
   card.querySelector(".comment-btn").addEventListener("click", () => openComments(postId));
-  // Share
   card.querySelector(".share-btn").addEventListener("click", e => {
     const text = e.currentTarget.dataset.content;
     if (navigator.clipboard) {
@@ -624,7 +617,6 @@ function buildPostCard(postId, data, showDelete = false) {
       showToast("📋 Copied to clipboard!");
     }
   });
-  // Delete
   if (isOwn) {
     card.querySelector(".delete-btn").addEventListener("click", () => deletePost(postId));
   }
@@ -634,7 +626,12 @@ function buildPostCard(postId, data, showDelete = false) {
 
 function escHtml(str) {
   if (!str) return "";
-  return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+  return str
+    .replace(/&/g,  "&amp;")
+    .replace(/</g,  "&lt;")
+    .replace(/>/g,  "&gt;")
+    .replace(/"/g,  "&quot;")
+    .replace(/'/g,  "&#039;");
 }
 
 // ══════════════════════════════════════
@@ -642,13 +639,13 @@ function escHtml(str) {
 // ══════════════════════════════════════
 async function toggleLike(postId, currentLikes) {
   if (!currentUser) return;
-  const ref = doc(db, "posts", postId);
+  const ref   = doc(db, "posts", postId);
   const liked = currentLikes.includes(currentUser.uid);
   try {
     await updateDoc(ref, {
       likes: liked ? arrayRemove(currentUser.uid) : arrayUnion(currentUser.uid)
     });
-    if (!liked) addActivity(`You liked a post`);
+    if (!liked) addActivity("You liked a post");
   } catch (err) {
     showToast("Error: " + err.message, "error");
   }
@@ -661,10 +658,8 @@ async function deletePost(postId) {
   if (!confirm("Delete this transmission?")) return;
   try {
     await deleteDoc(doc(db, "posts", postId));
-    // Delete comments subcollection
     const cSnap = await getDocs(collection(db, "posts", postId, "comments"));
     cSnap.forEach(async d => await deleteDoc(d.ref));
-    // Decrement user post count
     await updateDoc(doc(db, "users", currentUser.uid), { postCount: increment(-1) });
     showToast("🗑️ Transmission deleted");
     addActivity("You deleted a post");
@@ -674,22 +669,58 @@ async function deletePost(postId) {
 }
 
 // ══════════════════════════════════════
-//  COMMENT MODAL
+//  COMMENT MODAL  ← FIXED
 // ══════════════════════════════════════
-function setupCommentModal() {
-  $("close-modal").addEventListener("click", closeComments);
-  $("comment-modal").addEventListener("click", e => { if (e.target === $("comment-modal")) closeComments(); });
+const COMMENT_MAX = 500;
 
+function setupCommentModal() {
+  // Close via X button
+  $("close-modal").addEventListener("click", closeComments);
+
+  // Close on backdrop click
+  $("comment-modal").addEventListener("click", e => {
+    if (e.target === $("comment-modal")) closeComments();
+  });
+
+  // ✅ FIX: Close on Escape key — previously missing
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && currentPostId) closeComments();
+  });
+
+  // Submit button
   $("submit-comment").addEventListener("click", submitComment);
-  $("comment-input").addEventListener("keydown", e => { if (e.key === "Enter") submitComment(); });
+
+  // ✅ FIX: Enter submits, Shift+Enter = newline, no accidental trapping
+  $("comment-input").addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      submitComment();
+    }
+  });
+
+  // ✅ FIX: Live character counter
+  $("comment-input").addEventListener("input", () => {
+    const len     = $("comment-input").value.length;
+    const counter = $("comment-char-count");
+    if (counter) {
+      counter.textContent = `${len}/${COMMENT_MAX}`;
+      counter.style.color = len > COMMENT_MAX - 50 ? "var(--neon-red)" : "var(--text-muted, #888)";
+    }
+  });
 }
 
 let commentUnsub = null;
 
 function openComments(postId) {
   currentPostId = postId;
-  $("comment-modal").style.removeProperty("display");
+  // ✅ FIX: use classList instead of toggling style.display so CSS handles visibility properly
+  $("comment-modal").classList.add("open");
   $("comment-input").value = "";
+
+  // Reset char counter
+  const counter = $("comment-char-count");
+  if (counter) { counter.textContent = `0/${COMMENT_MAX}`; counter.style.color = ""; }
+
   $("comments-list").innerHTML = `<div class="loading-posts"><div class="orbit-loader"></div></div>`;
 
   if (commentUnsub) commentUnsub();
@@ -717,25 +748,41 @@ function openComments(postId) {
     });
     list.scrollTop = list.scrollHeight;
   });
+
+  // Focus input after modal opens
+  setTimeout(() => $("comment-input").focus(), 100);
 }
 
 function closeComments() {
-  $("comment-modal").style.display = "none";
+  // ✅ FIX: use classList — matches openComments and avoids display-property conflicts
+  $("comment-modal").classList.remove("open");
   if (commentUnsub) { commentUnsub(); commentUnsub = null; }
   currentPostId = null;
+  $("comment-input").value = "";
 }
 
 async function submitComment() {
-  const text = $("comment-input").value.trim();
+  const input = $("comment-input");
+  const text  = input.value.trim();
   if (!text || !currentPostId) return;
-  $("comment-input").value = "";
+
+  // ✅ FIX: enforce character limit — was missing, caused Firestore rule rejection
+  if (text.length > COMMENT_MAX) {
+    showToast(`Comment too long (max ${COMMENT_MAX} characters)`, "error");
+    return;
+  }
+
+  input.value = "";
+  const counter = $("comment-char-count");
+  if (counter) { counter.textContent = `0/${COMMENT_MAX}`; counter.style.color = ""; }
+
   try {
     await addDoc(collection(db, "posts", currentPostId, "comments"), {
       text,
-      authorId: currentUser.uid,
-      authorName: currentUser.displayName || "Pilot",
+      authorId:    currentUser.uid,
+      authorName:  currentUser.displayName || "Pilot",
       authorPhoto: currentUser.photoURL || avatarFallback(currentUser.displayName),
-      createdAt: serverTimestamp()
+      createdAt:   serverTimestamp()
     });
     await updateDoc(doc(db, "posts", currentPostId), { commentCount: increment(1) });
     addActivity("You replied to a transmission");
@@ -762,14 +809,13 @@ function setupFAB() {
 // ══════════════════════════════════════
 async function loadStats() {
   try {
-    const snap = await getDocs(collection(db, "posts"));
+    const snap  = await getDocs(collection(db, "posts"));
     const count = snap.size;
     $("stat-posts").textContent = count;
 
-    // Count total likes
     let likes = 0;
     snap.forEach(d => { likes += (d.data().likes || []).length; });
-    $("stat-likes").textContent = likes;
+    $("stat-likes").textContent   = likes;
     $("stat-members").textContent = Math.floor(Math.random() * 50) + 12; // Simulated
 
     loadProfileStats();
@@ -792,11 +838,11 @@ function renderActivity() {
   if (!el) return;
   el.innerHTML = "";
   activityLog.forEach(item => {
-    const d = document.createElement("div");
-    d.className = "activity-item";
+    const d      = document.createElement("div");
+    d.className  = "activity-item";
     const secAgo = Math.round((Date.now() - item.time.getTime()) / 1000);
-    const t = secAgo < 60 ? `${secAgo}s ago` : `${Math.floor(secAgo/60)}m ago`;
-    d.innerHTML = `<div class="activity-dot"></div><div class="activity-text">${escHtml(item.text)}</div><div class="activity-time">${t}</div>`;
+    const t      = secAgo < 60 ? `${secAgo}s ago` : `${Math.floor(secAgo / 60)}m ago`;
+    d.innerHTML  = `<div class="activity-dot"></div><div class="activity-text">${escHtml(item.text)}</div><div class="activity-time">${t}</div>`;
     el.appendChild(d);
   });
 }
@@ -805,7 +851,7 @@ function renderActivity() {
 //  MOBILE BOTTOM NAV (inject)
 // ══════════════════════════════════════
 function setupMobileNav() {
-  const nav = document.createElement("nav");
+  const nav     = document.createElement("nav");
   nav.className = "mobile-nav";
   nav.innerHTML = `
     <div class="mobile-nav-inner">
@@ -841,17 +887,17 @@ function setupMobileNav() {
 //  GROUP JOIN BUTTONS (static UX)
 // ══════════════════════════════════════
 document.querySelectorAll(".btn-join").forEach(btn => {
-  btn.addEventListener("click", function() {
+  btn.addEventListener("click", function () {
     const joined = this.textContent === "Joined";
-    this.textContent = joined ? "Join" : "Joined";
-    this.style.color = joined ? "" : "var(--neon-green)";
-    this.style.borderColor = joined ? "" : "var(--neon-green)";
+    this.textContent        = joined ? "Join" : "Joined";
+    this.style.color        = joined ? "" : "var(--neon-green)";
+    this.style.borderColor  = joined ? "" : "var(--neon-green)";
     showToast(joined ? "Left community" : "✅ Joined community!");
   });
 });
 
 // ══════════════════════════════════════
-//  CREATE GROUP (modal-less simple flow)
+//  CREATE GROUP
 // ══════════════════════════════════════
 document.getElementById("create-group-btn")?.addEventListener("click", () => {
   showToast("🚧 Community creation coming soon!");
