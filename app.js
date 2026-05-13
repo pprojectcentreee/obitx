@@ -713,8 +713,7 @@ let commentUnsub = null;
 
 function openComments(postId) {
   currentPostId = postId;
-  // ✅ FIX: use classList instead of toggling style.display so CSS handles visibility properly
-  $("comment-modal").classList.add("open");
+  $("comment-modal").style.display = "flex";
   $("comment-input").value = "";
 
   // Reset char counter
@@ -754,8 +753,7 @@ function openComments(postId) {
 }
 
 function closeComments() {
-  // ✅ FIX: use classList — matches openComments and avoids display-property conflicts
-  $("comment-modal").classList.remove("open");
+  $("comment-modal").style.display = "none";
   if (commentUnsub) { commentUnsub(); commentUnsub = null; }
   currentPostId = null;
   $("comment-input").value = "";
