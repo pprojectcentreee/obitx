@@ -674,11 +674,14 @@ async function deletePost(postId) {
 const COMMENT_MAX = 500;
 
 function setupCommentModal() {
-  // Close via X button
-  $("close-modal").addEventListener("click", closeComments);
+  // Close via X button — stopPropagation prevents backdrop firing too
+  $("close-modal").addEventListener("click", e => {
+    e.stopPropagation();
+    closeComments();
+  });
 
-  // Close on backdrop click
-  $("comment-modal").addEventListener("click", e => {
+  // Close on backdrop click using mousedown so focus() doesn't interfere
+  $("comment-modal").addEventListener("mousedown", e => {
     if (e.target === $("comment-modal")) closeComments();
   });
 
@@ -748,8 +751,6 @@ function openComments(postId) {
     list.scrollTop = list.scrollHeight;
   });
 
-  // Focus input after modal opens
-  setTimeout(() => $("comment-input").focus(), 100);
 }
 
 function closeComments() {
